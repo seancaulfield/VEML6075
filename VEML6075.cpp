@@ -29,7 +29,7 @@ bool VEML6075::begin() {
   }
 
   // Write config to make sure device is enabled
-  this->write_config();
+  this->write16(VEML6075_REG_CONF, this->config);
 
   return true;
 }
@@ -73,15 +73,6 @@ float VEML6075::getUVIndex() {
   float uva_weighted = this->getUVA() * VEML6075_UVI_UVA_RESPONSE;
   float uvb_weighted = this->getUVB() * VEML6075_UVI_UVB_RESPONSE;
   return (uva_weighted + uvb_weighted) / 2.0;
-}
-
-uint8_t VEML6075::read_config() {
-  uint16_t value = this->read16(VEML6075_REG_CONF);
-  return (uint8_t)(0xFF & value);
-}
-
-void VEML6075::write_config() {
-  this->write16(VEML6075_REG_CONF, this->config);
 }
 
 uint16_t VEML6075::read16(uint8_t reg) {

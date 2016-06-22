@@ -100,15 +100,6 @@ class VEML6075 {
     uint16_t raw_vis;
     uint16_t raw_ir;
 
-    uint16_t getRawUVA();
-    uint16_t getRawUVB();
-    uint16_t getRawDarkCurrent();
-    uint16_t getRawVisComp();
-    uint16_t getRawIRComp();
-
-    uint8_t read_config();
-    void write_config();
-
     uint16_t read16(uint8_t reg);
     void write16(uint8_t reg, uint16_t data);
 

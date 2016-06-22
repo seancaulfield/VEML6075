@@ -13,37 +13,45 @@
 #include <VEML6075.h>
 
 VEML6075 veml6075 = VEML6075();
+bool found = false;
 
 void setup() {
-  Serial.begin(9600);
+  delay(1000);
+  Serial.begin(57600);
+  Wire.begin();
+  if (!veml6075.begin()) {
+    Serial.println(F("VEML6075 not found!"));
+  } else {
+    found = true;
+  }
 }
 
 void loop() {
-  uint16_t value;
 
-  value = veml6075.getUVA();
-  Serial.print(F("UVA = "));
-  Serial.println(value);
+  if (found) {
+    uint16_t value;
 
-  value = veml6075.getUVB();
-  Serial.print(F("UVB = "));
-  Serial.println(value);
+    Serial.print(F("t = "));
+    Serial.println(millis());
 
-  value = veml6075.getUVDummy();
-  Serial.print(F("UVDummy = "));
-  Serial.println(value);
+    value = veml6075.getUVA();
+    Serial.print(F("UVA = "));
+    Serial.println(value);
 
-  value = veml6075.getUVcomp1();
-  Serial.print(F("UV comp 1 = "));
-  Serial.println(value);
+    value = veml6075.getUVB();
+    Serial.print(F("UVB = "));
+    Serial.println(value);
 
-  value = veml6075.getUVcomp2();
-  Serial.print(F("UV comp 2 = "));
-  Serial.println(value);
+    value = veml6075.getUVIndex();
+    Serial.print(F("UV Index = "));
+    Serial.println(value);
 
-  value = veml6075.getDevID();
-  Serial.print(F("Device ID = "));
-  Serial.println(value);
+    value = veml6075.getDevID();
+    Serial.print(F("Device ID = "));
+    Serial.println(value, HEX);
 
-  delay(1000);
+    Serial.println(F("----------------"));
+  }
+
+    delay(1000);
 }
