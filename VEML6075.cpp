@@ -11,40 +11,77 @@
 #include "VEML6075.h"
 
 VEML6075::VEML6075() {
+
+  // Despite the datasheet saying this isn't the default on startup, it appears
+  // like it is. So tell the thing to actually start gathering data.
+  this->config = 0;
+  this->config |= VEML6075_CONF_SD_OFF;
+
+  // App note only provided math for this one...
+  this->config |= VEML6075_CONF_IT_100MS;
 }
 
-void VEML6075::begin() {
+bool VEML6075::begin() {
+
   Wire.begin();
-  this->write16(VEML6075_REG_CONF, VEML6075_CONF_IT_50MS
-    | VEML6075_CONF_HD_NORM
-    | VEML6075_CONF_AF_OFF
-    | VEML6075_CONF_SD_OFF
-  );
-  Wire.endTransmission();
+  if (this->getDevID() != VEML6075_DEVID) {
+    return false;
+  }
+
+  // Write config to make sure device is enabled
+  this->write_config();
+
+  return true;
 }
 
-uint16_t VEML6075::getUVA() {
-  return this->read16(VEML6075_REG_UVA);
-}
-
-uint16_t VEML6075::getUVB() {
-  return this->read16(VEML6075_REG_UVB);
-}
-
-uint16_t VEML6075::getUVDummy() {
-  return this->read16(VEML6075_REG_DUMMY);
-}
-
-uint16_t VEML6075::getUVcomp1() {
-  return this->read16(VEML6075_REG_UVCOMP1);
-}
-
-uint16_t VEML6075::getUVcomp2() {
-  return this->read16(VEML6075_REG_UVCOMP2);
+// Poll sensor for latest values and cache them
+void VEML6075::poll() {
+  this->raw_uva = this->read16(VEML6075_REG_UVA);
+  this->raw_uvb = this->read16(VEML6075_REG_UVB);
+  this->raw_dark = this->read16(VEML6075_REG_DUMMY);
+  this->raw_vis = this->read16(VEML6075_REG_UVCOMP1);
+  this->raw_ir = this->read16(VEML6075_REG_UVCOMP2);
 }
 
 uint16_t VEML6075::getDevID() {
   return this->read16(VEML6075_REG_DEVID);
+}
+
+float VEML6075::getUVA() {
+  float comp_vis = this->raw_vis - this->raw_dark;
+  float comp_ir = this->raw_ir - this->raw_dark;
+  float comp_uva = this->raw_uva - this->raw_dark;
+
+  comp_uva -= VEML6075_UVI_UVA_VIS_COEFF * comp_vis;
+  comp_uva -= VEML6075_UVI_UVA_IR_COEFF * comp_ir;
+
+  return comp_uva;
+}
+
+float VEML6075::getUVB() {
+  float comp_vis = this->raw_vis - this->raw_dark;
+  float comp_ir = this->raw_ir - this->raw_dark;
+  float comp_uvb = this->raw_uvb - this->raw_dark;
+
+  comp_uvb -= VEML6075_UVI_UVB_VIS_COEFF * comp_vis;
+  comp_uvb -= VEML6075_UVI_UVB_IR_COEFF * comp_ir;
+
+  return comp_uvb;
+}
+
+float VEML6075::getUVIndex() {
+  float uva_weighted = this->getUVA() * VEML6075_UVI_UVA_RESPONSE;
+  float uvb_weighted = this->getUVB() * VEML6075_UVI_UVB_RESPONSE;
+  return (uva_weighted + uvb_weighted) / 2.0;
+}
+
+uint8_t VEML6075::read_config() {
+  uint16_t value = this->read16(VEML6075_REG_CONF);
+  return (uint8_t)(0xFF & value);
+}
+
+void VEML6075::write_config() {
+  this->write16(VEML6075_REG_CONF, this->config);
 }
 
 uint16_t VEML6075::read16(uint8_t reg) {
@@ -53,9 +90,9 @@ uint16_t VEML6075::read16(uint8_t reg) {
 
   Wire.beginTransmission(VEML6075_ADDR);
   Wire.write(reg);
-  Wire.endTransmission();
+  Wire.endTransmission(false);
 
-  Wire.requestFrom(VEML6075_ADDR, 2);
+  Wire.requestFrom(VEML6075_ADDR, 2, true);
   lsb = Wire.read();
   msb = Wire.read();
 
