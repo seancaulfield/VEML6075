@@ -29,26 +29,29 @@ void setup() {
 void loop() {
 
   if (found) {
-    uint16_t value;
+    float value;
+
+    // Poll sensor
+    veml6075.poll();
 
     Serial.print(F("t = "));
     Serial.println(millis());
 
     value = veml6075.getUVA();
     Serial.print(F("UVA = "));
-    Serial.println(value);
+    Serial.println(value, 2);
 
     value = veml6075.getUVB();
     Serial.print(F("UVB = "));
-    Serial.println(value);
+    Serial.println(value, 2);
 
     value = veml6075.getUVIndex();
     Serial.print(F("UV Index = "));
-    Serial.println(value);
+    Serial.println(value, 1);
 
-    value = veml6075.getDevID();
+    uint16_t devid = veml6075.getDevID();
     Serial.print(F("Device ID = "));
-    Serial.println(value, HEX);
+    Serial.println(devid, HEX);
 
     Serial.println(F("----------------"));
   }

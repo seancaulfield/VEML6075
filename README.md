@@ -19,6 +19,9 @@ Pretty straightforward; see the example sketch for a detailed test.
       // Do something intelligent if the sensor isn't found
     }
 
+    // Poll sensor
+    my_veml6075.poll();
+
     // Get "raw" UVA and UVB counts, with the dark current removed
     uint16_t uva = my_veml6075.getUVA();
     uint16_t uvb = my_veml6075.getUVB();
