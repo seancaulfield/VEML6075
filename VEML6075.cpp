@@ -43,6 +43,27 @@ void VEML6075::poll() {
   this->raw_ir = this->read16(VEML6075_REG_UVCOMP2);
 }
 
+uint16_t VEML6075::getRawUVA() {
+  return this->raw_uva;
+}
+
+uint16_t VEML6075::getRawUVB() {
+  return this->raw_uvb;
+}
+
+uint16_t VEML6075::getRawDark() {
+  return this->raw_dark;
+}
+
+uint16_t VEML6075::getRawVisComp() {
+  return this->raw_vis;
+}
+
+uint16_t VEML6075::getRawIRComp() {
+  return this->raw_ir;
+}
+
+
 uint16_t VEML6075::getDevID() {
   return this->read16(VEML6075_REG_DEVID);
 }

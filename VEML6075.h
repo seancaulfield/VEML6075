@@ -88,6 +88,12 @@ class VEML6075 {
     float getUVIndex();
     uint16_t getDevID();
 
+    uint16_t getRawUVA();
+    uint16_t getRawUVB();
+    uint16_t getRawDark();
+    uint16_t getRawVisComp();
+    uint16_t getRawIRComp();
+
     void setIntegrationTime(veml6075_int_time_t it);
 
   private:
