@@ -76,7 +76,7 @@ float VEML6075::getUVA() {
 
   comp_uva -= (VEML6075_UVI_UVA_VIS_COEFF * comp_vis) - (VEML6075_UVI_UVA_IR_COEFF * comp_ir);
 
-  return this->raw_uva;
+  return comp_uva;
 }
 
 float VEML6075::getUVB() {
