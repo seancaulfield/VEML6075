@@ -4,6 +4,7 @@
  * Arduino library for the Vishay VEML6075 UVA/UVB i2c sensor.
  *
  * Author: Sean Caulfield <sean@yak.net>
+ * 
  * License: GPLv2.0
  *
  */
@@ -73,8 +74,7 @@ float VEML6075::getUVA() {
   float comp_ir = this->raw_ir - this->raw_dark;
   float comp_uva = this->raw_uva - this->raw_dark;
 
-  comp_uva -= VEML6075_UVI_UVA_VIS_COEFF * comp_vis;
-  comp_uva -= VEML6075_UVI_UVA_IR_COEFF * comp_ir;
+  comp_uva -= (VEML6075_UVI_UVA_VIS_COEFF * comp_vis) - (VEML6075_UVI_UVA_IR_COEFF * comp_ir);
 
   return comp_uva;
 }
@@ -84,8 +84,7 @@ float VEML6075::getUVB() {
   float comp_ir = this->raw_ir - this->raw_dark;
   float comp_uvb = this->raw_uvb - this->raw_dark;
 
-  comp_uvb -= VEML6075_UVI_UVB_VIS_COEFF * comp_vis;
-  comp_uvb -= VEML6075_UVI_UVB_IR_COEFF * comp_ir;
+  comp_uvb -= (VEML6075_UVI_UVB_VIS_COEFF * comp_vis) - (VEML6075_UVI_UVB_IR_COEFF * comp_ir);
 
   return comp_uvb;
 }
