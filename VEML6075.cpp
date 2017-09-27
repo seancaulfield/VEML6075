@@ -24,7 +24,6 @@ VEML6075::VEML6075() {
 
 bool VEML6075::begin() {
 
-  Wire.begin();
   if (this->getDevID() != VEML6075_DEVID) {
     return false;
   }
