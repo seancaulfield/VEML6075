@@ -84,7 +84,7 @@ class VEML6075 {
   public:
 
     VEML6075();
-    bool begin();
+    bool begin(TwoWire *i2c=&Wire);
 
     void poll();
     float getUVA();
@@ -102,6 +102,7 @@ class VEML6075 {
 
   private:
 
+    TwoWire *i2c;
     uint8_t config;
 
     uint16_t raw_uva;

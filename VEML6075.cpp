@@ -22,9 +22,11 @@ VEML6075::VEML6075() {
   this->config |= VEML6075_CONF_IT_100MS;
 }
 
-bool VEML6075::begin() {
+bool VEML6075::begin(TwoWire *_i2c) {
 
-  Wire.begin();
+  this->i2c = _i2c;
+
+  this->i2c->begin();
   if (this->getDevID() != VEML6075_DEVID) {
     return false;
   }
@@ -127,21 +129,21 @@ uint16_t VEML6075::read16(uint8_t reg) {
   uint8_t msb = 0;
   uint8_t lsb = 0;
 
-  Wire.beginTransmission(VEML6075_ADDR);
-  Wire.write(reg);
-  Wire.endTransmission(false);
+  this->i2c->beginTransmission(VEML6075_ADDR);
+  this->i2c->write(reg);
+  this->i2c->endTransmission(false);
 
-  Wire.requestFrom(VEML6075_ADDR, 2, true);
-  lsb = Wire.read();
-  msb = Wire.read();
+  this->i2c->requestFrom(VEML6075_ADDR, 2, true);
+  lsb = this->i2c->read();
+  msb = this->i2c->read();
 
   return (msb << 8) | lsb;
 }
 
 void VEML6075::write16(uint8_t reg, uint16_t data) {
-  Wire.beginTransmission(VEML6075_ADDR);
-  Wire.write(reg);
-  Wire.write((uint8_t)(0xFF & (data >> 0))); // LSB
-  Wire.write((uint8_t)(0xFF & (data >> 8))); // MSB
-  Wire.endTransmission();
+  this->i2c->beginTransmission(VEML6075_ADDR);
+  this->i2c->write(reg);
+  this->i2c->write((uint8_t)(0xFF & (data >> 0))); // LSB
+  this->i2c->write((uint8_t)(0xFF & (data >> 8))); // MSB
+  this->i2c->endTransmission();
 }
