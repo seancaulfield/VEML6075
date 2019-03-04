@@ -4,6 +4,7 @@
  * Arduino library for the Vishay VEML6075 UVA/UVB i2c sensor.
  *
  * Author: Sean Caulfield <sean@yak.net>
+ * 
  * License: GPLv2.0
  *
  */
