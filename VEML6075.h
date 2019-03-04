@@ -52,19 +52,23 @@
 // Seems pretty hand wavey, though not nearly as annoying as the dark current
 // not being subtracted out by default.
 
-#define VEML6075_UVI_UVA_VIS_COEFF (3.33)
-#define VEML6075_UVI_UVA_IR_COEFF  (2.5)
-#define VEML6075_UVI_UVB_VIS_COEFF (3.66)
-#define VEML6075_UVI_UVB_IR_COEFF  (2.75)
+#define VEML6075_UVI_UVA_VIS_COEFF (2.22) // aka coeff "A"
+#define VEML6075_UVI_UVA_IR_COEFF  (1.33) // aka coeff "B"
+#define VEML6075_UVI_UVB_VIS_COEFF (2.95) // aka coeff "C"
+#define VEML6075_UVI_UVB_IR_COEFF  (1.74) // aka coeff "D"
 
 // Once the above offsets and crunching is done, there's a last weighting
 // function to convert the ADC counts into the UV index values. This handles
 // both the conversion into irradiance (W/m^2) and the skin erythema weighting
 // by wavelength--UVB is way more dangerous than UVA, due to shorter
-// wavelengths and thus more energy per photon. These values convert the compensated values 
+// wavelengths and thus more energy per photon. These values convert the
+// compensated values.
+//
+// NB These are the "open air" values given in the application note for the
+// VEML6075.
 
-#define VEML6075_UVI_UVA_RESPONSE (1.0 / 909.0)
-#define VEML6075_UVI_UVB_RESPONSE (1.0 / 800.0)
+#define VEML6075_UVI_UVA_RESPONSE (0.001461)
+#define VEML6075_UVI_UVB_RESPONSE (0.002591)
 
 enum veml6075_int_time {
   VEML6075_IT_50MS,
