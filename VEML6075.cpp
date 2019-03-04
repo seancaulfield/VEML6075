@@ -69,23 +69,49 @@ uint16_t VEML6075::getDevID() {
 }
 
 float VEML6075::getUVA() {
-  float comp_vis = this->raw_vis - this->raw_dark;
-  float comp_ir = this->raw_ir - this->raw_dark;
-  float comp_uva = this->raw_uva - this->raw_dark;
+  //float comp_vis = this->raw_vis - this->raw_dark;
+  //float comp_ir = this->raw_ir - this->raw_dark;
+  //float comp_uva = this->raw_uva - this->raw_dark;
+  float comp_vis;
+  float comp_ir;
+  float comp_uva;
 
-  comp_uva -= VEML6075_UVI_UVA_VIS_COEFF * comp_vis;
-  comp_uva -= VEML6075_UVI_UVA_IR_COEFF * comp_ir;
+  // Constrain compensation channels to positive values
+  comp_ir  = max(this->raw_ir - this->raw_dark, 0.0);
+  comp_vis = max(this->raw_vis - this->raw_dark, 0.0);
+  comp_uva = max(this->raw_uva - this->raw_dark, 0.0);
+
+  // Scale by coeffs from datasheet
+  comp_vis *= VEML6075_UVI_UVA_VIS_COEFF;
+  comp_ir  *= VEML6075_UVI_UVA_IR_COEFF;
+
+  // Subtract out visible and IR components
+  comp_uva = max(comp_uva - comp_ir, 0.0);
+  comp_uva = max(comp_uva - comp_vis, 0.0);
 
   return comp_uva;
 }
 
 float VEML6075::getUVB() {
-  float comp_vis = this->raw_vis - this->raw_dark;
-  float comp_ir = this->raw_ir - this->raw_dark;
-  float comp_uvb = this->raw_uvb - this->raw_dark;
+  //float comp_vis = this->raw_vis - this->raw_dark;
+  //float comp_ir = this->raw_ir - this->raw_dark;
+  //float comp_uvb = this->raw_uvb - this->raw_dark;
+  float comp_vis;
+  float comp_ir;
+  float comp_uvb;
 
-  comp_uvb -= VEML6075_UVI_UVB_VIS_COEFF * comp_vis;
-  comp_uvb -= VEML6075_UVI_UVB_IR_COEFF * comp_ir;
+  // Constrain compensation channels to positive values
+  comp_ir  = max(this->raw_ir - this->raw_dark, 0.0);
+  comp_vis = max(this->raw_vis - this->raw_dark, 0.0);
+  comp_uvb = max(this->raw_uvb - this->raw_dark, 0.0);
+
+  // Scale by coeffs from datasheet
+  comp_vis *= VEML6075_UVI_UVB_VIS_COEFF;
+  comp_ir  *= VEML6075_UVI_UVB_IR_COEFF;
+
+  // Subtract out visible and IR components
+  comp_uvb = max(comp_uvb - comp_ir, 0.0);
+  comp_uvb = max(comp_uvb - comp_vis, 0.0);
 
   return comp_uvb;
 }
