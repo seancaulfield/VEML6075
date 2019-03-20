@@ -80,17 +80,17 @@ float VEML6075::getUVA() {
   float comp_uva;
 
   // Constrain compensation channels to positive values
-  comp_ir  = max(this->raw_ir - this->raw_dark, 0.0);
-  comp_vis = max(this->raw_vis - this->raw_dark, 0.0);
-  comp_uva = max(this->raw_uva - this->raw_dark, 0.0);
+  comp_ir  = max(this->raw_ir - this->raw_dark, 0);
+  comp_vis = max(this->raw_vis - this->raw_dark, 0);
+  comp_uva = max(this->raw_uva - this->raw_dark, 0);
 
   // Scale by coeffs from datasheet
   comp_vis *= VEML6075_UVI_UVA_VIS_COEFF;
   comp_ir  *= VEML6075_UVI_UVA_IR_COEFF;
 
   // Subtract out visible and IR components
-  comp_uva = max(comp_uva - comp_ir, 0.0);
-  comp_uva = max(comp_uva - comp_vis, 0.0);
+  comp_uva = max(comp_uva - comp_ir, 0.0F);
+  comp_uva = max(comp_uva - comp_vis, 0.0F);
 
   return comp_uva;
 }
@@ -104,17 +104,17 @@ float VEML6075::getUVB() {
   float comp_uvb;
 
   // Constrain compensation channels to positive values
-  comp_ir  = max(this->raw_ir - this->raw_dark, 0.0);
-  comp_vis = max(this->raw_vis - this->raw_dark, 0.0);
-  comp_uvb = max(this->raw_uvb - this->raw_dark, 0.0);
+  comp_ir  = max(this->raw_ir - this->raw_dark, 0);
+  comp_vis = max(this->raw_vis - this->raw_dark, 0);
+  comp_uvb = max(this->raw_uvb - this->raw_dark, 0);
 
   // Scale by coeffs from datasheet
   comp_vis *= VEML6075_UVI_UVB_VIS_COEFF;
   comp_ir  *= VEML6075_UVI_UVB_IR_COEFF;
 
   // Subtract out visible and IR components
-  comp_uvb = max(comp_uvb - comp_ir, 0.0);
-  comp_uvb = max(comp_uvb - comp_vis, 0.0);
+  comp_uvb = max(comp_uvb - comp_ir, 0.0F);
+  comp_uvb = max(comp_uvb - comp_vis, 0.0F);
 
   return comp_uvb;
 }
@@ -133,7 +133,7 @@ uint16_t VEML6075::read16(uint8_t reg) {
   this->i2c->write(reg);
   this->i2c->endTransmission(false);
 
-  this->i2c->requestFrom(VEML6075_ADDR, 2, true);
+  this->i2c->requestFrom(VEML6075_ADDR,2, true);
   lsb = this->i2c->read();
   msb = this->i2c->read();
 
