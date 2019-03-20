@@ -133,7 +133,7 @@ uint16_t VEML6075::read16(uint8_t reg) {
   this->i2c->write(reg);
   this->i2c->endTransmission(false);
 
-  this->i2c->requestFrom(VEML6075_ADDR,2, true);
+  this->i2c->requestFrom(VEML6075_ADDR, 2, true);
   lsb = this->i2c->read();
   msb = this->i2c->read();
 
