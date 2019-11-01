@@ -6,18 +6,18 @@
 # Class
 #######################################
 
-VEML6075		KEYWORD1
+VEML6075	KEYWORD1
 
 #######################################
 # Methods
 #######################################
 
-getUVA		KEYWORD2
-getUVB		KEYWORD2
-getUVDummy		KEYWORD2
-getUVcomp1		KEYWORD2
-getUVcomp2		KEYWORD2
-getDevID		KEYWORD2
+getUVA	KEYWORD2
+getUVB	KEYWORD2
+getUVDummy	KEYWORD2
+getUVcomp1	KEYWORD2
+getUVcomp2	KEYWORD2
+getDevID	KEYWORD2
 
 #######################################
 # Constants
