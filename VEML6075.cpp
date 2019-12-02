@@ -18,7 +18,9 @@ VEML6075::VEML6075() {
   this->config = 0;
   this->config |= VEML6075_CONF_SD_OFF;
 
-  // App note only provided math for this one...
+  // App note only provided math for this one, so be advised that changing it
+  // will give you "undefined" results from all the calculations.
+  // Might be able to do a linear compensation for the integration time length?
   this->config |= VEML6075_CONF_IT_100MS;
 }
 
@@ -72,9 +74,6 @@ uint16_t VEML6075::getDevID() {
 }
 
 float VEML6075::getUVA() {
-  //float comp_vis = this->raw_vis - this->raw_dark;
-  //float comp_ir = this->raw_ir - this->raw_dark;
-  //float comp_uva = this->raw_uva - this->raw_dark;
   float comp_vis;
   float comp_ir;
   float comp_uva;
@@ -96,9 +95,6 @@ float VEML6075::getUVA() {
 }
 
 float VEML6075::getUVB() {
-  //float comp_vis = this->raw_vis - this->raw_dark;
-  //float comp_ir = this->raw_ir - this->raw_dark;
-  //float comp_uvb = this->raw_uvb - this->raw_dark;
   float comp_vis;
   float comp_ir;
   float comp_uvb;
