@@ -4,6 +4,7 @@
  * Arduino library for the Vishay VEML6075 UVA/UVB i2c sensor.
  *
  * Author: Sean Caulfield <sean@yak.net>
+ * Author: Holger Hees <holger.hees@gmail.com>
  * 
  * License: GPLv2.0
  *
@@ -12,19 +13,10 @@
 #include "VEML6075.h"
 
 VEML6075::VEML6075() {
-
-  // Despite the datasheet saying this isn't the default on startup, it appears
-  // like it is. So tell the thing to actually start gathering data.
-  this->config = 0;
-  this->config |= VEML6075_CONF_SD_OFF;
-
-  // App note only provided math for this one, so be advised that changing it
-  // will give you "undefined" results from all the calculations.
-  // Might be able to do a linear compensation for the integration time length?
-  this->config |= VEML6075_CONF_IT_100MS;
+  this->_commandRegister.reg = 0;
 }
 
-bool VEML6075::begin(TwoWire *_i2c) {
+bool VEML6075::begin(veml6075_int_time itime,bool highDynamic, bool forcedReads, TwoWire *_i2c) {
 
   this->i2c = _i2c;
 
@@ -32,15 +24,55 @@ bool VEML6075::begin(TwoWire *_i2c) {
   if (this->getDevID() != VEML6075_DEVID) {
     return false;
   }
+  
+  // disable device to change config
+  this->_commandRegister.bit.SD = true;
+  // set config
+  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
 
-  // Write config to make sure device is enabled
-  this->write16(VEML6075_REG_CONF, this->config);
+  // change config calues
+  this->_commandRegister.bit.UV_IT = (uint8_t)itime;
+  
+  this->_read_delay = 0;
+  switch (itime) {
+    case VEML6075_IT_50MS:
+      this->_read_delay = 50;
+      break;
+    case VEML6075_IT_100MS:
+      this->_read_delay = 100;
+      break;
+    case VEML6075_IT_200MS:
+      this->_read_delay = 200;
+      break;
+    case VEML6075_IT_400MS:
+      this->_read_delay = 400;
+      break;
+    case VEML6075_IT_800MS:
+      this->_read_delay = 800;
+      break;
+  }
+  
+  this->_commandRegister.bit.UV_HD = highDynamic;
+  this->_commandRegister.bit.UV_AF = forcedReads;
+
+  // enable device
+  this->_commandRegister.bit.SD = false;
+  // set config
+  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
 
   return true;
 }
 
 // Poll sensor for latest values and cache them
 void VEML6075::poll() {
+  if(this->_commandRegister.bit.UV_AF)
+  {
+    this->_commandRegister.bit.UV_TRIG = true;
+    this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
+
+    delay(this->_read_delay + 50);
+  }
+  
   this->raw_uva = this->read16(VEML6075_REG_UVA);
   this->raw_uvb = this->read16(VEML6075_REG_UVB);
   this->raw_dark = this->read16(VEML6075_REG_DUMMY);
