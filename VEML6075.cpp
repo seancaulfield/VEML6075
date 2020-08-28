@@ -26,9 +26,7 @@ bool VEML6075::begin(veml6075_int_time itime,bool highDynamic, bool forcedReads,
   }
   
   // disable device to change config
-  this->_commandRegister.bit.SD = true;
-  // set config
-  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
+  this->powerDown();
 
   // change config calues
   this->_commandRegister.bit.UV_IT = (uint8_t)itime;
@@ -56,11 +54,19 @@ bool VEML6075::begin(veml6075_int_time itime,bool highDynamic, bool forcedReads,
   this->_commandRegister.bit.UV_AF = forcedReads;
 
   // enable device
-  this->_commandRegister.bit.SD = false;
-  // set config
-  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
+  this->powerUp();
 
   return true;
+}
+
+void VEML6075::powerDown(){
+  this->_commandRegister.bit.SD = true;
+  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
+}
+
+void VEML6075::powerUp(){
+  this->_commandRegister.bit.SD = false;
+  this->write16(VEML6075_REG_CONF, this->_commandRegister.reg);
 }
 
 // Poll sensor for latest values and cache them

@@ -97,6 +97,8 @@ class VEML6075 {
     VEML6075();
     bool begin(veml6075_int_time itime = VEML6075_IT_100MS,bool highDynamic = false, bool forcedReads = false, TwoWire *i2c=&Wire);
 
+    void powerDown();
+    void powerUp();
     void poll();
     float getUVA();
     float getUVB();
