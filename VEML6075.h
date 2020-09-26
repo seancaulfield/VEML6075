@@ -70,22 +70,35 @@
 #define VEML6075_UVI_UVA_RESPONSE (0.001461)
 #define VEML6075_UVI_UVB_RESPONSE (0.002591)
 
-enum veml6075_int_time {
+typedef enum {
   VEML6075_IT_50MS,
   VEML6075_IT_100MS,
   VEML6075_IT_200MS,
   VEML6075_IT_400MS,
   VEML6075_IT_800MS
-};
-typedef enum veml6075_int_time veml6075_int_time_t;
+} veml6075_int_time;
+
+typedef union {
+  struct {
+    uint8_t SD : 1;
+    uint8_t UV_AF : 1;
+    uint8_t UV_TRIG : 1;
+    uint8_t UV_HD : 1;
+    uint8_t UV_IT : 3;
+    uint8_t high_byte;
+  } bit;
+  uint16_t reg;
+} veml6075_commandRegister;
 
 class VEML6075 {
 
   public:
 
     VEML6075();
-    bool begin(TwoWire *i2c=&Wire);
+    bool begin(veml6075_int_time itime = VEML6075_IT_100MS,bool highDynamic = false, bool forcedReads = false, TwoWire *i2c=&Wire);
 
+    void powerDown();
+    void powerUp();
     void poll();
     float getUVA();
     float getUVB();
@@ -97,13 +110,12 @@ class VEML6075 {
     uint16_t getRawDark();
     uint16_t getRawVisComp();
     uint16_t getRawIRComp();
-
-    void setIntegrationTime(veml6075_int_time_t it);
-
   private:
 
     TwoWire *i2c;
-    uint8_t config;
+    
+    uint16_t _read_delay;
+    veml6075_commandRegister _commandRegister;
 
     uint16_t raw_uva;
     uint16_t raw_uvb;
@@ -113,7 +125,6 @@ class VEML6075 {
 
     uint16_t read16(uint8_t reg);
     void write16(uint8_t reg, uint16_t data);
-
 };
 
 #endif
